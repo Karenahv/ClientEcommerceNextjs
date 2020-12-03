@@ -1,0 +1,14 @@
+.login-form {
+  .actions {
+    justify-content: flex-start !important;
+
+    .ui.basic.button {
+      margin-left: 0;
+      margin-right: 275px;
+    }
+
+    .ui.button.submit {
+      margin-right: 2px !important;
+    }
+  }
+}
