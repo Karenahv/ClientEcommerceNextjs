@@ -6,10 +6,14 @@ import {useRouter} from "next/router";
 import Auth from "../../Auth";
 import useAuth from "../../../hooks/useAuth";
 import {getmeApi} from "../../../api/user";
+import {getPlatformsApi} from "../../../api/platform";
+import {map} from "lodash";
+
 
 export default function MenuWeb() {
     const [showModal, setShowModal] = useState(false)
     const [titleModal, setTitleModal] = useState('Iniciar sesión')
+    const [platforms, setPlatforms] = useState([])
     const [user, setUser] = useState(undefined)
     const {logout, auth} = useAuth()
 
@@ -22,12 +26,19 @@ export default function MenuWeb() {
             setUser(response)
         })()
     }, [auth])
+
+    useEffect(() => {
+        (async () => {
+            const response = await getPlatformsApi()
+            setPlatforms(response || [])
+        })()
+    }, [])
     return (
         <div className={"menu"}>
             <Container>
                 <Grid>
                     <Grid.Column className={"menu__left"} width={6}>
-                        <MenuPlatform></MenuPlatform>
+                        <MenuPlatforms platforms={platforms}></MenuPlatforms>
                     </Grid.Column>
                     <Grid.Column className={"menu__right"} width={10}>
 
@@ -48,29 +59,21 @@ export default function MenuWeb() {
 }
 
 
-function MenuPlatform() {
-    return (
-        <Menu>
-            <Link href={"/play-station"}>
-                <Menu.Item as={"a"}>
-                    PlayStation
-                </Menu.Item>
-            </Link>
-            <Link href={"/xbox"}>
-                <Menu.Item as={"a"}>
-                    Xbox
-                </Menu.Item>
-            </Link>
-            <Link href={"/switch"}>
-                <Menu.Item as={"a"}>
-                    Switch
-                </Menu.Item>
-            </Link>
+function MenuPlatforms(props) {
+  const { platforms } = props;
 
-        </Menu>
-    )
+  return (
+    <Menu>
+      {map(platforms, (platform) => (
+        <Link href={`/games/${platform.url}`} key={platform._id}>
+          <Menu.Item as="a" name={platform.url}>
+            {platform.title}
+          </Menu.Item>
+        </Link>
+      ))}
+    </Menu>
+  );
 }
-
 
 function MenuOptions(props) {
     const {onShowModal, user, logout} = props

@@ -1,11 +1,12 @@
 import React, {useState, useEffect} from 'react'
-import {getAddressApi} from "../../../api/address";
+import {deleteAddressApi, getAddressApi} from "../../../api/address";
 import useAuth from "../../../hooks/useAuth";
 import {map, size} from 'lodash'
 import {Button, Grid} from "semantic-ui-react";
 
 
-export default function ListAddress() {
+export default function ListAddress(props) {
+    const {setReloadAddresess, reloadAddresses, openModal} = props
     const [addresses, setAddresses] = useState(null)
     const {auth, logout} = useAuth()
 
@@ -13,8 +14,13 @@ export default function ListAddress() {
         (async () => {
             const response = await getAddressApi(auth.idUser, logout)
             setAddresses(response || [])
+            setReloadAddresess(false)
         })()
-    }, [auth.idUser])
+    }, [auth.idUser, reloadAddresses])
+
+    if(!addresses) {
+        return null
+    }
 
     return (
         <div className="list-address">
@@ -27,8 +33,8 @@ export default function ListAddress() {
                             <Address
                                 address={address}
                                 logout={logout}
-                                // setReloadAddreses={setReloadAddreses}
-                                // openModal={openModal}
+                                setReloadAddresess={setReloadAddresess}
+                                openModal={openModal}
                             />
                         </Grid.Column>
                     ))}
@@ -39,8 +45,17 @@ export default function ListAddress() {
 }
 
 function Address(props) {
-    const {address} = props
+    const {address, logout, setReloadAddresess, openModal} = props
+    const [loading, setLoading] = useState(false)
 
+    const  deleteAddress = async () => {
+        setLoading(true)
+        const response = await deleteAddressApi(address._id, logout);
+        if (response) {
+            setReloadAddresess(true)
+        }
+        setLoading(false)
+    }
     return (
         <div className={'address'}>
             <p>{address.title}</p>
@@ -50,8 +65,8 @@ function Address(props) {
             <p>{address.state}, {address.city} {address.postalCode}</p>
             <p>{address.phone}</p>
             <div className={'actions'}>
-                <Button primary>Editar</Button>
-                <Button>Eliminar</Button>
+                <Button primary onClick={() => openModal(`Editar: ${address.title}`, address)}>Editar</Button>
+                <Button loading={loading} onClick={deleteAddress}>Eliminar</Button>
             </div>
 
         </div>

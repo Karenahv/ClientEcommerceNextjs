@@ -5,44 +5,58 @@ import * as Yup from "yup";
 import {createAddressApi, updateEmailApi} from "../../../api/user";
 import {toast} from "react-toastify";
 import useAuth from "../../../hooks/useAuth";
+import {updateAddressApi} from "../../../api/address";
 
 export default function AddressForm(props) {
     const [loading, setLoading] = useState(false)
     const {auth, logout} = useAuth()
-    const {setShowModal} = props
+    const {setShowModal, setReloadAddresess, newAddress, address} = props
 
     const formik = useFormik({
-        initialValues: initialValues(),
+        initialValues: initialValues(address),
         validationSchema: Yup.object(validationScheman()),
-        onSubmit: async (formData) => {
-           const formDataTemp = await createAddress(formData)
-            setLoading(true);
-
-            const response = await createAddressApi(formDataTemp, logout)
-            if (response) {
-                toast.success('Dirección creada')
-                formik.handleReset()
-                setShowModal(false)
-            } else if (response?.status === 400) {
-                toast.error('Error al crear la dirección')
-
-            } else {
-                toast.error('Error al crear la dirección')
-            }
-            setLoading(false)
-        }
-    })
+        onSubmit: (formData) => {
+            newAddress ? createAddress(formData) : updateAddress(formData);
+        },
+    });
 
     const createAddress = async (formData) => {
-        setLoading(true)
+        setLoading(true);
         const formDataTemp = {
-                ...formData,
-                user: auth.idUser,
+            ...formData,
+            users_permissions_user: auth.idUser,
+        };
+        const response = await createAddressApi(formDataTemp, logout);
 
-            }
-            setLoading(false)
-        return formDataTemp
-    }
+        if (!response) {
+            toast.warning("Error al crear la dirección");
+            setLoading(false);
+        } else {
+            formik.resetForm();
+            setReloadAddresess(true);
+            setLoading(false);
+            setShowModal(false);
+        }
+    };
+
+    const updateAddress = async (formData) => {
+        setLoading(true);
+        const formDataTemp = {
+            ...formData,
+            users_permissions_user: auth.idUser,
+        };
+        const response = await updateAddressApi(address._id, formDataTemp, logout);
+
+        if (!response) {
+            toast.warning("Error al actualizar la direccion");
+            setLoading(false);
+        } else {
+            formik.resetForm();
+            setReloadAddresess(true);
+            setLoading(false);
+            setShowModal(false);
+        }
+    };
     return (
 
         <Form widths={'equal'} onSubmit={formik.handleSubmit}>
@@ -77,7 +91,7 @@ export default function AddressForm(props) {
                     error={formik.errors.address}
                 >
                 </Form.Input>
-            </Form.Group>
+            </Form.Group>dasd
             <Form.Group widths={'equal'}>
                 <Form.Input
                     name={'city'}
@@ -126,24 +140,26 @@ export default function AddressForm(props) {
 
             </Form.Group>
             <div className={'actions'}>
-                <Button className={'submit'} type={'submit'} loading={loading}>Crear Dirección</Button>
+                <Button className={'submit'} type={'submit'} loading={loading}>
+                    {
+                        newAddress ? 'Crear Dirección' : 'Actualizar Dirección'
+                    }</Button>
             </div>
 
         </Form>
     )
 }
 
-function initialValues(user) {
-    return {
-        title: '',
-        name: '',
-        address: '',
-        city: '',
-        state: '',
-        postalCode:'',
-        phone:''
-
-    }
+function initialValues(address) {
+  return {
+    title: address?.title || "",
+    name: address?.name || "",
+    address: address?.address || "",
+    city: address?.city || "",
+    state: address?.state || "",
+    postalCode: address?.postalCode || "",
+    phone: address?.phone || "",
+  };
 }
 
 function validationScheman() {

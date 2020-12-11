@@ -38,7 +38,7 @@ export default function Account() {
 }
 
 function Configuration(props) {
-    const {user, logout, setReloadUser} =props
+    const {user, logout, setReloadUser} = props
     return (
         <div className={'account__configuration'}>
             <div className={'title'}>Configuración</div>
@@ -55,16 +55,27 @@ function Addresses() {
     const [showModal, setShowModal] = useState(false)
     const [titleModal, setTitleModal] = useState('')
     const [formModal, setFormModal] = useState(null)
+    const [reloadAddresses, setReloadAddresess] = useState(false)
 
-    const openModal = (title) => {
+    const openModal = (title, address) => {
         setTitleModal(title)
-        setFormModal(<AddressForm setShowModal={setShowModal}></AddressForm>)
+        setFormModal(<AddressForm
+            setReloadAddresess={setReloadAddresess}
+            setShowModal={setShowModal}
+            newAddress={address ? false: true}
+            address = {address ? address: null}
+        ></AddressForm>)
         setShowModal(true)
     }
     return (
         <div className={'account__addresses'}>
-            <div className={'title'}>Direcciones <Icon name={'plus'} link onClick={() => openModal('Nueva dirección')}/></div>
-            <div className={'data'}><ListAddress></ListAddress></div>
+            <div className={'title'}>Direcciones <Icon name={'plus'} link onClick={() => openModal('Nueva dirección')}/>
+            </div>
+            <div className={'data'}><ListAddress
+                reloadAddresses={reloadAddresses}
+                setReloadAddresess={setReloadAddresess}
+                openModal={openModal}
+            ></ListAddress></div>
             <BasicModal show={showModal} setShow={setShowModal} title={titleModal}>
                 {formModal}
             </BasicModal>
