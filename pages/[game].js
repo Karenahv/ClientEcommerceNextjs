@@ -15,7 +15,7 @@ export default function Game() {
             const response = await getGameByUrlApi(query.game)
             setGame(response)
         })()
-    })
+    },[])
 
     if(!game) {
         return null

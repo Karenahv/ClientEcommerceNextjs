@@ -7,6 +7,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import AuthContext from "../context/AuthContext";
 import {getToken, removeToken, setToken} from "../api/token";
 import jwtDecode from "jwt-decode";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 
 function MyApp({Component, pageProps}) {
