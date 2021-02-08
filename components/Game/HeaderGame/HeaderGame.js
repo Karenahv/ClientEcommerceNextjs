@@ -1,5 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {Button, Grid, Icon, Image} from "semantic-ui-react";
+import {addFavoriteApi, isFavoriteApi} from "../../../api/favorite";
+import useAuth from "../../../hooks/useAuth";
+import classNames from 'classnames'
 
 
 export default function HeaderGame(props) {
@@ -21,12 +24,45 @@ export default function HeaderGame(props) {
 function Info(props) {
     const {game} = props
     const {title, summary, precio, discount} = game[0]
+    const [isFavorite, setIsFavorite] = useState(false)
+    const [reloadFavorite, setReloadFavorite] = useState(false)
+    const {auth, logout} =useAuth()
+
+    useEffect(() => {
+        (async () =>{
+            const response = await isFavoriteApi(auth.idUser, game[0].id, logout)
+            if(response.length>0){
+                setIsFavorite(true)
+            } else {
+                setIsFavorite(false)
+            }
+            setReloadFavorite(false)
+        })()
+    },[game, reloadFavorite])
+
+    const addFavorite = async () => {
+        if(auth){
+            const result = await addFavoriteApi(auth.idUser, game[0].id, logout)
+            if (result){
+                setReloadFavorite(true)
+            }
+
+        }
+
+    }
+
+    const deleteFavorite = () => {
+
+    }
 
     return (
         <>
             <div className='header-game__title'>
                 {title}
-                <Icon name={'heart outline'} link></Icon>
+                <Icon name={isFavorite ? 'heart': 'heart outline'} className={classNames({
+                    like: isFavorite
+                })} link
+                onClick={isFavorite ? deleteFavorite: addFavorite}></Icon>
             </div>
             <div className={'header-game__delivery'}>Entreta en 24 horas</div>
             <div className={'header-game__summary'} dangerouslySetInnerHTML={{__html: summary}}>
