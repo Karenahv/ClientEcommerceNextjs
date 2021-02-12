@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import {Button, Container, Grid, Icon, Menu} from 'semantic-ui-react'
+import {Button, Container, Grid, Icon, Label, Menu} from 'semantic-ui-react'
 import Link from "next/link";
 import BasicModal from "../../Modal/BasicModal/BasicModal";
 import {useRouter} from "next/router";
@@ -8,6 +8,7 @@ import useAuth from "../../../hooks/useAuth";
 import {getmeApi} from "../../../api/user";
 import {getPlatformsApi} from "../../../api/platform";
 import {map} from "lodash";
+import useCart from "../../../hooks/useCart";
 
 
 export default function MenuWeb() {
@@ -16,6 +17,7 @@ export default function MenuWeb() {
     const [platforms, setPlatforms] = useState([])
     const [user, setUser] = useState(undefined)
     const {logout, auth} = useAuth()
+
 
     const onShowModal = () => setShowModal(true)
     const onCloseModal = () => setShowModal(false)
@@ -60,23 +62,24 @@ export default function MenuWeb() {
 
 
 function MenuPlatforms(props) {
-  const { platforms } = props;
+    const {platforms} = props;
 
-  return (
-    <Menu>
-      {map(platforms, (platform) => (
-        <Link href={`/games/${platform.url}`} key={platform._id}>
-          <Menu.Item as="a" name={platform.url}>
-            {platform.title}
-          </Menu.Item>
-        </Link>
-      ))}
-    </Menu>
-  );
+    return (
+        <Menu>
+            {map(platforms, (platform) => (
+                <Link href={`/games/${platform.url}`} key={platform._id}>
+                    <Menu.Item as="a" name={platform.url}>
+                        {platform.title}
+                    </Menu.Item>
+                </Link>
+            ))}
+        </Menu>
+    );
 }
 
 function MenuOptions(props) {
     const {onShowModal, user, logout} = props
+    const {productsCart} = useCart()
     return (
         <Menu>
             {user ? (
@@ -102,6 +105,14 @@ function MenuOptions(props) {
                     <Link href={'/cart'}>
                         <Menu.Item as='a' className={'m-0'}>
                             <Icon name={'cart'}></Icon>
+                            {
+                                productsCart > 0 && (
+                                    <Label color="red" floating circular>
+                                        {productsCart}
+                                    </Label>
+                                )
+                            }
+
 
                         </Menu.Item>
                     </Link>

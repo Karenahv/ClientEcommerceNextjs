@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from "react";
 import {Button, Grid, Icon, Image} from "semantic-ui-react";
-import {addFavoriteApi, isFavoriteApi} from "../../../api/favorite";
+import {addFavoriteApi, deleteFavoriteApi, isFavoriteApi} from "../../../api/favorite";
 import useAuth from "../../../hooks/useAuth";
 import classNames from 'classnames'
+import useCart from "../../../hooks/useCart";
 
 
 export default function HeaderGame(props) {
@@ -23,10 +24,11 @@ export default function HeaderGame(props) {
 
 function Info(props) {
     const {game} = props
-    const {title, summary, precio, discount} = game[0]
+    const {title, summary, precio, discount, url} = game[0]
     const [isFavorite, setIsFavorite] = useState(false)
     const [reloadFavorite, setReloadFavorite] = useState(false)
     const {auth, logout} =useAuth()
+    const {addProductCart} = useCart()
 
     useEffect(() => {
         (async () =>{
@@ -51,7 +53,13 @@ function Info(props) {
 
     }
 
-    const deleteFavorite = () => {
+    const deleteFavorite = async () => {
+        if(auth){
+            const result = await  deleteFavoriteApi(auth.idUser, game[0].id, logout)
+            if (result){
+                setReloadFavorite(true)
+            }
+        }
 
     }
 
@@ -75,7 +83,7 @@ function Info(props) {
                         <p>{(precio - Math.floor(precio * discount) / 100).toFixed(2)}€</p>
                     </div>
                 </div>
-                <Button header-game__buy-btn>
+                <Button header-game__buy-btn onClick={()=>addProductCart(url)}>
                     Comprar
                 </Button>
             </div>
