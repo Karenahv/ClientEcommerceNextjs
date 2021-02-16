@@ -23,7 +23,7 @@ export default function AddressShiping(props) {
             }
 
         })()
-    })
+    },[])
     return (
         <div className={'address-shipping'}>
             <div className='title'>Dirección de envío

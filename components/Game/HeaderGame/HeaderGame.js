@@ -8,11 +8,19 @@ import useCart from "../../../hooks/useCart";
 
 export default function HeaderGame(props) {
     const {game} = props
-    const {poster, title} = game[0]
+    console.log(game)
+    let poster = ''
+    let title = ''
+    debugger;
+    if(game && game[0]){
+         poster = game[0].poster
+            title = game[0].title
+    }
+
     return (
         <Grid className={'header-game'}>
             <Grid.Column mobile={16} tablet={6} computer={5}>
-                <Image src={poster.url} alt={title} fluid></Image>
+                <Image src={poster?.url} alt={title} fluid></Image>
             </Grid.Column>
             <Grid.Column mobile={16} tablet={10} computer={11}>
                 <Info game={game}></Info>

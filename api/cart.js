@@ -57,3 +57,31 @@ export function removeProductCart(product) {
         }
 
 }
+
+export async function paymentCartApi(token, products, idUser, address, logout) {
+    debugger;
+  try {
+    const addressShipping = address;
+    delete addressShipping.users_permissions_user;
+    delete addressShipping.createdAt;
+
+    const url = `${URL_BASE}/orders`;
+    const params = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        token: token.id,
+        products,
+        idUser,
+        addressShipping,
+      }),
+    };
+    const result = await authFetch(url, params, logout);
+    return result;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+}

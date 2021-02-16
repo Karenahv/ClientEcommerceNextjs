@@ -1,54 +1,53 @@
-import React, {useEffect, useState} from 'react'
+import React, { useState, useEffect } from "react";
 import BasicLayout from "../layouts/BasicLayout";
+import { getGameByUrlApi } from "../api/game";
 import useCart from "../hooks/useCart";
-import {getGameByUrlApi} from "../api/game";
-import SummaryCart from "../components/Cart";
+import SummaryCart from "../components/Cart/SummaryCart";
 import AddressShiping from "../components/Cart/AddressShiping";
+import Payment from "../components/Cart/Payment";
 
-export default function cart() {
+export default function Cart() {
+  const { getProductsCart } = useCart();
+  const products = getProductsCart();
 
-    const {getProductsCart} = useCart()
-    const products = getProductsCart()
-
-    return !products ? <EmptyCart></EmptyCart>: <FullCart products={products}></FullCart>
-
+  return !products ? <EmptyCart /> : <FullCart products={products} />;
 }
 
-
 function EmptyCart() {
-    return (
-        <BasicLayout className='empty-cart'>
-            No hay productos en el carrito
-        </BasicLayout>
-    )
-
+  return (
+    <BasicLayout className="empty-cart">
+      <h2>No hay productos en el carrito</h2>
+    </BasicLayout>
+  );
 }
 
 function FullCart(props) {
-     const [productsData, setProductsData] = useState(null)
-     const [reloadCart, setReloadCart] = useState(false)
-     const [address, setAddress] = useState(null)
-    const {products} = props
+  const { products } = props;
+  const [productsData, setProductsData] = useState(null);
+  const [reloadCart, setReloadCart] = useState(false);
+  const [address, setAddress] = useState(null);
 
-    useEffect(()=>{
-        (async()=>{
-            const productsTemp = []
-            for await (const product of products) {
-                const data = await  getGameByUrlApi(product)
-                productsTemp.push(data)
-            }
-            setProductsData(productsTemp)
+  useEffect(() => {
+    (async () => {
+      const productsTemp = [];
+      for await (const product of products) {
+        const data = await getGameByUrlApi(product);
+        productsTemp.push(data);
+      }
+      setProductsData(productsTemp);
+    })();
+    setReloadCart(false);
+  }, [reloadCart]);
 
-        })()
-        setReloadCart(false)
-    }, [reloadCart])
-    return (
-        <BasicLayout className='empty-cart'>
-           <SummaryCart products={productsData}
-           setReloadCart={setReloadCart}
-           reloadCart={reloadCart}></SummaryCart>
-            <AddressShiping setAddress={setAddress}></AddressShiping>
-        </BasicLayout>
-    )
-
+  return (
+    <BasicLayout className="empty-cart">
+      <SummaryCart
+        products={productsData}
+        reloadCart={reloadCart}
+        setReloadCart={setReloadCart}
+      />
+      <AddressShiping setAddress={setAddress} />
+      {address && <Payment products={productsData} address={address} />}
+    </BasicLayout>
+  );
 }

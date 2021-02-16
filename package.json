@@ -8,6 +8,8 @@
     "start": "next start"
   },
   "dependencies": {
+    "@stripe/react-stripe-js": "^1.2.2",
+    "@stripe/stripe-js": "^1.12.1",
     "classnames": "^2.2.6",
     "formik": "^2.2.5",
     "jwt-decode": "^3.1.2",
@@ -24,6 +26,7 @@
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^2.0.1",
     "slick-carousel": "^1.8.1",
+    "yarn": "^1.22.10",
     "yup": "^0.31.0"
   }
 }
