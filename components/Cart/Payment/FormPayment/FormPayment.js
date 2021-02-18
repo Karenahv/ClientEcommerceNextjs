@@ -18,7 +18,7 @@ export default function FormPayment(props) {
   const router = useRouter();
 
   const handleSubmit = async (event) => {
-    debugger;
+
     event.preventDefault();
     setLoading(true);
 
@@ -26,7 +26,7 @@ export default function FormPayment(props) {
 
     const cardElement = elements.getElement(CardElement);
     const result = await stripe.createToken(cardElement);
-  debugger;
+    debugger;
     if (result.error) {
       toast.error(result.error.message);
     } else {
@@ -38,7 +38,6 @@ export default function FormPayment(props) {
         logout
       );
       debugger;
-
       if (size(response) > 0) {
         toast.success("Pedido completado");
         removeAllProductsCart();

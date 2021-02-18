@@ -10,7 +10,13 @@ import jwtDecode from "jwt-decode";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import CartContext from "../context/CartContext";
-import {addProductCart, countProductsCart, getProductsCart, removeProductCart} from "../api/cart";
+import {
+    addProductCart,
+    countProductsCart,
+    getProductsCart,
+    removeAllProductsCart,
+    removeProductCart
+} from "../api/cart";
 import {toast} from 'react-toastify'
 
 
@@ -86,7 +92,7 @@ function MyApp({Component, pageProps}) {
             addProductCart: (product) => addProduct(product),
             getProductsCart: getProductsCart,
             removeProductCart: (product) => removeProduct(product),
-            removeAllProductsCart: () => null,
+            removeAllProductsCart: removeAllProductsCart,
 
         }),
         [totalProductsCart]

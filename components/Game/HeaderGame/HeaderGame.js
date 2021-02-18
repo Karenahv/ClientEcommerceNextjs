@@ -32,7 +32,19 @@ export default function HeaderGame(props) {
 
 function Info(props) {
     const {game} = props
-    const {title, summary, precio, discount, url} = game[0]
+    let title
+    let summary
+    let precio
+    let discount
+    let url
+    if(game && game[0]){
+       title = game[0].title
+        summary= game[0].summary
+        discount= game[0].discount
+        precio= game[0].precio
+        url= game[0].url
+    }
+
     const [isFavorite, setIsFavorite] = useState(false)
     const [reloadFavorite, setReloadFavorite] = useState(false)
     const {auth, logout} =useAuth()
@@ -40,7 +52,7 @@ function Info(props) {
 
     useEffect(() => {
         (async () =>{
-            const response = await isFavoriteApi(auth.idUser, game[0].id, logout)
+            const response = await isFavoriteApi(auth.idUser, game[0]?.id, logout)
             if(response.length>0){
                 setIsFavorite(true)
             } else {
@@ -52,7 +64,7 @@ function Info(props) {
 
     const addFavorite = async () => {
         if(auth){
-            const result = await addFavoriteApi(auth.idUser, game[0].id, logout)
+            const result = await addFavoriteApi(auth.idUser, game[0]?.id, logout)
             if (result){
                 setReloadFavorite(true)
             }
@@ -63,7 +75,7 @@ function Info(props) {
 
     const deleteFavorite = async () => {
         if(auth){
-            const result = await  deleteFavoriteApi(auth.idUser, game[0].id, logout)
+            const result = await  deleteFavoriteApi(auth.idUser, game[0]?.id, logout)
             if (result){
                 setReloadFavorite(true)
             }
